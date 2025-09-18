@@ -1,0 +1,103 @@
+// -------- EXISTING --------
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String   @id @default(cuid())
+  name          String?
+  email         String   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+
+  // optional backref for convenience
+  tracks        Track[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// -------- NEW --------
+
+enum Visibility {
+  PUBLIC
+  UNLISTED
+  PRIVATE
+}
+
+model Track {
+  id          String     @id @default(cuid())
+  name        String
+
+  /// Store the uploader by email (you asked for email-based relation).
+  userEmail   String
+  uploader    User       @relation(fields: [userEmail], references: [email], onDelete: Cascade)
+
+  /// Vercel Blob (key or full URL—your choice). Keep as strings.
+  audioUrl    String
+  imageUrl    String
+
+  /// Optional metadata
+  durationSec Int?       // length in seconds
+  bpm         Int?
+  key         String?    // e.g. "Am", "C# minor"
+  tags        String[]   @default([])
+
+  visibility  Visibility @default(PUBLIC)
+
+  /// Simple counters (denormalized for speed; keep truth in Play/Like tables later)
+  playCount   Int        @default(0)
+  likeCount   Int        @default(0)
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([userEmail, createdAt])
+  @@index([visibility, createdAt])
+}

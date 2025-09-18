@@ -79,3 +79,29 @@ export default layout
 - walk thru step by step
 - add auth icon to have something on screen
 
+
+### DATABASE & AUTHENICATION SETUP
+- npm i -D prisma
+- npm i @prisma/client
+- npx prisma init
+- npm i @vercel/blob
+
+
+- add vercel storage and blob
+- authjs docs
+
+- follow setup and update prisma/postgresql
+
+- bring in auth
+- lib/user-auth
+- add in the auth
+- signin/signout btn
+- auth-action update
+- update the next.config.ts
+- confirm it works and check prisma studio
+
+
+--- SETUP MOBILE NAV ---
+- brng into the top header
+- test it out - make sure its functional
+

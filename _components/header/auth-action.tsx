@@ -1,20 +1,41 @@
-// components/header/AuthIcon.tsx (server component)
-import Link from "next/link";
-import { UserRound } from "lucide-react";
+// components/header/auth-action.tsx (server)
+import Image from "next/image";
+import { auth } from "@/auth";
+import { signInWithGoogle, signOutUser } from "@/lib/user-auth";
+import IconPendingButton from "./pending-btn";
 
-export default function AuthIcon() {
-  // Later: detect session server-side and swap to avatar.
-  return (
-    <div
-      className="inline-flex items-center justify-center rounded-full border border-neutral-200 p-1.5 hover:bg-neutral-100"
-      aria-label="Sign in"
-      title="Sign in"
-    >
-      <div className="relative">
-        <UserRound className="h-5 w-5 text-neutral-700" />
-        {/* Accent status dot for style */}
-        <span className="absolute -right-0.5 -top-0.5 inline-block h-2 w-2 rounded-full bg-purple-500 ring-2 ring-white" />
+export default async function AuthAction() {
+  const session = await auth();
+  const user = session?.user;
+
+  if (!user) {
+    return (
+      <div className="flex items-center gap-2">
+        {/* mobile: icon-only */}
+        <form action={signInWithGoogle} className="sm:hidden">
+          <IconPendingButton ariaLabel="Sign in" icon="log-in" size="sm" variant="neutral" />
+        </form>
+        {/* desktop: icon + label */}
+        <form action={signInWithGoogle} className="hidden sm:block">
+          <IconPendingButton ariaLabel="Sign in" icon="log-in" label="Sign in" size="sm" variant="neutral" />
+        </form>
       </div>
+    );
+  }
+
+
+
+  return (
+    <div className="flex items-center gap-2">
+
+      {/* mobile: icon-only sign out */}
+      <form action={signOutUser} className="sm:hidden">
+        <IconPendingButton ariaLabel="Sign out" icon="log-out" size="sm" variant="ghost" />
+      </form>
+      {/* desktop: icon + label sign out */}
+      <form action={signOutUser} className="hidden sm:block">
+        <IconPendingButton ariaLabel="Sign out" icon="log-out" label="Sign out" size="sm" variant="ghost" />
+      </form>
     </div>
   );
 }

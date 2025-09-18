@@ -13,7 +13,7 @@ export default async function TopHeader() {
         <div className="flex items-center gap-1">
           <BackForwardButtons />
           {/* Mobile Menu trigger lives inside MobileNav (client) */}
-          <div className="sm:hidden">
+          <div className="lg:hidden">
             <MobileNav />
           </div>
         </div>
